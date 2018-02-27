@@ -1,0 +1,38 @@
+# Kata 4: 65. Valid Number
+Validate if a given string is numeric.<br/>
+<br/>
+Some examples:
+```
+"0" => true
+" 0.1 " => true
+"abc" => false
+"1 a" => false
+"2e10" => true
+```
+## Breakdown
+Ok, so that's a very breif problem description. However, the examples give us a bit more information about how our program should behave. The example " 0.1" says, for startes, that whitespaces should be ignored. It also brings out the fact that we're not just looking for integers, also _decimal values_. Third and fourth example don't give us a lot of information, those strings couldn't ever be considered numbers under normal circumstances. But the last example points out another important valid number format: _scientific notation_. This all makes things a bit more complex when we think of the problem as a whole. And the examples don't mention this, but if we think about it... numbers with commas such as "14,834,210" should also be considered valid, as should numbers with fraction exponents like "89e3.678"<br/>
+<br/>
+Then, we should be looking for numbers that may or may not be separated by commas and decimals, as well as containing an "e" indicating some exponent. How could we formalize this into a finite set of steps to check if it's a valid number or not?<br/>
+<br/>
+Well, here's how I did it: first, I start reading character by character, ignoring all whitespaces. If I find the "." character, I check that it's the first one I've seen. Otherwise, I just return false. Now, if I find the "," character and I had not seen it before, I check that there are between 1 and 3 numbers before it. Or, if I find "," and I had already seen it before, I check that there are exactly 3 numbers right before it.
+If the "e" character is found, I check that it's the first "e" I've seen, and that it won't be the last character of of the string. From here on, I also act as if there hadn't been any "." or "," found, since, I'm considering numbers may be contain these characters even after an "e" character. Appearance of any other character will just be considered as invalid, and false is returned.<br/>
+<br/>
+Feel free to see my complete solution for this problem in **C**, following the logic I've explained here.
+
+## How to compile
+make run
+
+## How to run test
+make test
+
+## How to debug the program
+gcc -g name_of_file.c -o name_of_file<br/>
+gdb name_of_file
+
+## Linking stuff and generating the program
+
+If you have modules you have to compile one by one<br/>
+gcc -c module1.c # This command generates module1.o<br/>
+gcc -c program-that-depends-of-module1.c<br/>
+gcc -o program.out module1.o program-that-depends-of-module1.o<br/>
+./program.out
