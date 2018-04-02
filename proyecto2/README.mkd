@@ -1,0 +1,102 @@
+# Google Code Jam 2017 Round 1A Problem C: Play the Dragon
+https://code.google.com/codejam/contest/5304486/dashboard#s=p2
+
+## Problem Description
+You are a friendly dragon fighting to protect your lair from a greedy knight! You have _Hd_ health points and an attack power of _Ad_, and the knight has _Hk_ health points and an attack power of _Ak_. If your health drops to 0 or below at any point; you are knocked out and you instantly lose; if the knight's health drops to 0 or below at any point, the knight is knocked out and you win! <br/>
+![knight vs dragon](https://orig00.deviantart.net/3e0a/f/2013/217/f/3/dragon_knight_by_jsek-d62xl92.jpg)<br/>
+<br/>
+You will battle the knight in a series of turns. On each turn, you go first, and you can choose and execute any one of the following actions. <br/>
+<br/>
+**Attack:** Reduce the opponent's health by your own attack power. <br/>
+**Buff:** Increase your attack power by _B_ for the rest of the battle. <br/>
+**Cure:** Your health becomes _Hd_. <br/>
+**Debuff:** Decrease the opponent's attack power by _D_ for the rest of the battle. If a Debuff would cause the opponent's attack power to become less than 0, it instead sets it to 0. <br/>
+<br/>
+Then, if the knight's health is greater than 0 following your action, the knight will execute an Attack action. After that, the turn ends. (Note that a turn in which you defeat the knight still counts as a turn even though the knight does not get to act.) <br/>
+<br/>
+Note that buffs stack with each other; every buff adds an additional _B_ to your attack power. Similarly, debuffs stack with each other.<br/>
+<br/>
+You would like to defeat the knight as fast as possible (if it is possible) so that you will not be late to help the villagers roast marshmallows at tonight's festival. Can you determine the minimum number of turns in which you can defeat the knight, or that it is IMPOSSIBLE to do so? <br/>
+<br/>
+**Input** <br/>
+The first line of the input gives the number of test cases, _T_. _T_ test cases follow. Each consists of one line with six integers _Hd_, _Ad_, _Hk_, _Ak_, _B_, and _D_, as described above. <br/>
+<br/>
+**Output** <br/>
+For each test case, output one line containing Case #x: y, where x is the test case number (starting from 1) and y is either IMPOSSIBLE if it is not possible to defeat the knight, or the minimum number of turns needed to defeat the knight. <br/>
+<br/>
+**Limits** <br/>
+```
+1 ≤ T ≤ 100.
+Small dataset
+1 ≤ Hd ≤ 100.
+1 ≤ Ad ≤ 100.
+1 ≤ Hk ≤ 100.
+1 ≤ Ak ≤ 100.
+0 ≤ B ≤ 100.
+0 ≤ D ≤ 100.
+Large dataset
+1 ≤ Hd ≤ 109.
+1 ≤ Ad ≤ 109.
+1 ≤ Hk ≤ 109.
+1 ≤ Ak ≤ 109.
+0 ≤ B ≤ 109.
+0 ≤ D ≤ 109.
+```
+**Sample Input** <br/>
+```
+4
+11 5 16 5 0 0
+3 1 3 2 2 0
+3 1 3 2 1 0
+2 1 5 1 1 1
+```
+**Sample Output**
+```
+Case #1: 5
+Case #2: 2
+Case #3: IMPOSSIBLE
+Case #4: 5
+```
+## Breakdown
+
+Let's start by looking closely at the **sample cases given**. <br/>
+**The first one** _(11 5 16 5 0 0)_, has a value of zero for both buff and debuff. This means, the only options our dragon has is attacking or curing himself. And, why waste a turn curing yourself if you don't need to? And with that, we've realized what a simple strategy gets us to defeat the knight in 5 turns. Heal ourselves if our health is critical, otherwise, attack. Plus one more thing to consider: if our health is critical but we can defeat the knight with one more hit, then just attack. <br/>
+**For the second sample case** _(3 1 3 2 2 0)_, the previous strategy is not enough... why? it would just leave us in a situation where we heal ourselves forever: we heal ourselves, knight attacks and leaves our health critical, we heal ourselves, knight attacks and leaves our health critical, and so and so on. <br/>
+For this and other situations, we have to look at the knight's damage with repect to our health. What would happen, if at any point, the knight's attack was >=33% of our remaining health? Well, that would mean a clear disadvantage for us. We could be dead in 3 turns or less, or, stuck in a heal-ourselves-for-ever scenario. So, if we ever detect this situation, we must debuff the knight's attack or buff ours so we kill him before this situation happens. <br/>
+**The third sample case** _(3 1 3 2 1 0)_ presents an interesting scenario: an impossible match. The most we can do is buff our attack in our first turn, but from then on, it's a heal-ourselves-for-ever-scenario. How do I know such thing happens? I just check if we have healed ourselves consecutively more than 3 times. If so, it must be a heal-ourselves-for-ever situation. <br/>
+**In the fourth and last sample case** _(2 1 5 1 1 1)_, the knight starts by having an attack that's 50% of our health, so we should debuff it. But, who knew? By doing so, his attack is now zero. No matter how many times he attacks us, he does no damage. And so, now it all comes down to how quick we defeat him. And for that, I calculate how many turns would take to defeat him if our attack was increased to _buff*n_. As soon as I find an _n_ for which the knight can be defeated in less turns that with our current attack, I know we should buff. If there is no such _n_, then buff isn't worth the try. <br/>
+<br/>
+I invite you to go check out my full solution to this problem in _C_ and run the tests so you can see it all works well!
+
+# How to compile
+```
+make run
+```
+# How to run test
+```
+make runtest
+```
+# How to debug the program
+```
+gcc -g name_of_file.c -o name_of_file
+gdb name_of_file
+```
+## How to start the Program
+```
+break main
+run # Execute the program
+next # Next Line
+print &i # Print the address of the variable
+print sizeof(int) # Print sizeof the int type
+x/4xb &i # Get the raw bytes of i. I want to examinate 4 values formatted as hex numerals. byte by byte
+ptype i # Tell me the type of c expression
+x/12xb &a # a is an array
+```
+# Linking stuff and generating the program
+```
+If you have modules you have to compile one by one
+gcc -c module1.c # This command generates module1.o
+gcc -c program-that-depends-of-module1.c
+gcc -o program.out module1.o program-that-depends-of-module1.o
+./program.out
+```
